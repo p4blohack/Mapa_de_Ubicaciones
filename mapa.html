@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="icon" href="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>#map { height: 100vh; }
+    .btn-claro {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #e60000; /* rojo Claro */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 9999;
+  }
+
+  .btn-claro:hover {
+    background-color: #c00000;
+    transform: scale(1.05);
+  }
+  </style>
+</head>
+<body>
+  <a href="/" class="btn-claro">⬅ Volver</a>
+  <div id="map"></div>
+  <script>
+    const ubicaciones = {{ ubicaciones | tojson | safe }};
+    const map = L.map('map').setView([4.5, -75.5], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    ubicaciones.forEach(u => {
+      const popup = `
+        <b>${u.Ubicacion}</b><br>
+        Aliado: ${u.Aliado}<br>
+        Carga: ${u.Carga} W<br>
+        Lat: ${u.Latitud}, Lon: ${u.Longitud}
+      `;
+      L.marker([u.Latitud, u.Longitud]).addTo(map).bindPopup(popup);
+    });
+  </script>
+</body>
+</html>

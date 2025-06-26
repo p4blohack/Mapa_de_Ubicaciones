@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Ubicación - Claro</title>
+  <link rel="icon" href="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #ed1c24, #ffffff);
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: #fff;
+      max-width: 500px;
+      margin: auto;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #ed1c24;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #ed1c24;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c1121f;
+    }
+
+    .enlace {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .enlace a {
+      color: #ed1c24;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      height: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg" alt="Logo Claro">
+    </div>
+    <h2>Agregar nueva ubicación</h2>
+    <form action="/guardar" method="post">
+      <label>Ubicación:</label>
+      <input type="text" name="Ubicacion" required>
+
+      <label>Aliado:</label>
+      <input type="text" name="Aliado" required>
+
+      <label>Carga:</label>
+      <input type="number" name="Carga" required>
+
+      <label>Latitud:</label>
+      <input type="text" name="Latitud" required>
+
+      <label>Longitud:</label>
+      <input type="text" name="Longitud" required>
+
+      <button type="submit">Guardar ubicación</button>
+    </form>
+    <div class="enlace">
+      <a href="/mapa">📍 Ir al mapa</a>
+    </div>
+  </div>
+</body>
+</html>
