@@ -24,7 +24,7 @@ with app.app_context():
     db.create_all()
 
 @app.route("/")
-def formulario():
+def form():
     return render_template("formulario.html")
 
 @app.route("/guardar", methods=["POST"])
