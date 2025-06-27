@@ -1,10 +1,10 @@
 from flask import Flask, request, render_template, redirect
-import pandas as pd
+import csv
 import os
 
 app = Flask(__name__)
 CSV_PATH = "ubicaciones.csv"
-ubicaciones = []  # También usaremos memoria para mostrar en el mapa
+ubicaciones = []  # Para almacenamiento temporal en memoria
 
 @app.route("/")
 def formulario():
@@ -23,23 +23,32 @@ def guardar():
     # Guardar en memoria
     ubicaciones.append(data)
 
-    # Guardar en CSV
-    df_nuevo = pd.DataFrame([data])
+    # Guardar en archivo CSV
     archivo_existe = os.path.isfile(CSV_PATH)
-    df_nuevo.to_csv(CSV_PATH, mode="a", header=not archivo_existe, index=False, sep=";", encoding="utf-8")
+    with open(CSV_PATH, mode="a", newline='', encoding="utf-8") as archivo:
+        writer = csv.DictWriter(archivo, fieldnames=data.keys(), delimiter=';')
+        if not archivo_existe:
+            writer.writeheader()
+        writer.writerow(data)
 
     return redirect("/mapa")
 
 @app.route("/mapa")
 def mapa():
-    # Leer desde el archivo CSV para asegurar persistencia
+    datos = []
     if os.path.exists(CSV_PATH):
-        df = pd.read_csv(CSV_PATH, sep=";", encoding="utf-8")
-        datos = df.to_dict(orient="records")
+        with open(CSV_PATH, newline='', encoding="utf-8") as archivo:
+            reader = csv.DictReader(archivo, delimiter=';')
+            for fila in reader:
+                # Asegurar que Lat y Lon sean flotantes si es necesario para el mapa
+                fila["Latitud"] = float(fila["Latitud"])
+                fila["Longitud"] = float(fila["Longitud"])
+                datos.append(fila)
     else:
-        datos = ubicaciones  # en caso de que el archivo no exista aún
+        datos = ubicaciones  # si el archivo aún no existe
 
     return render_template("mapa.html", ubicaciones=datos)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
