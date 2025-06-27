@@ -25,7 +25,7 @@ with app.app_context():
 
 @app.route("/")
 def form():
-    return render_template("formulario.html")
+    return render_template("form.html")
 
 @app.route("/guardar", methods=["POST"])
 def guardar():
