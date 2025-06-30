@@ -11,7 +11,7 @@
 
     .btn-claro {
       position: absolute;
-      top: 60px;
+      bottom: 20px; /* 🔽 ahora está en la parte inferior */
       left: 20px;
       background-color: #e60000;
       color: white;
@@ -33,31 +33,50 @@
       position: absolute;
       top: 20px;
       left: 20px;
-      margin-top: 50px; /* separa del botón de volver */
       z-index: 9999;
+      display: flex;
+      align-items: center;
       background: white;
-      padding: 10px;
+      padding: 8px 10px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    #busqueda {
+    .busqueda-container input {
       width: 200px;
-      padding: 8px;
+      padding: 8px 8px 8px 32px;
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
+    .busqueda-container .lupa {
+      position: absolute;
+      left: 30px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .icono-lupa {
+      position: absolute;
+      left: 15px;
+      font-size: 16px;
+      color: gray;
+    }
   </style>
 </head>
 <body>
-  <a href="/" class="btn-claro">⬅ Volver</a>
-
+  <!-- 🔍 Cuadro de búsqueda -->
   <div class="busqueda-container">
+    <span class="icono-lupa">🔍</span>
     <input type="text" id="busqueda" placeholder="Buscar ubicación..." />
   </div>
 
+  <!-- 🗺️ Mapa -->
   <div id="map"></div>
+
+  <!-- ⬅ Botón Volver -->
+  <a href="/" class="btn-claro">⬅ Volver</a>
 
   <script>
     const ubicaciones = {{ ubicaciones | tojson | safe }};
