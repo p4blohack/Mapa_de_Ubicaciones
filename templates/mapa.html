@@ -7,49 +7,94 @@
   <link rel="icon" href="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-     #map { height: 100vh; }
+    #map { height: 100vh; }
 
-  .btn-claro {
-    position: absolute;
-    top: 60px; /* 🔽 mueve el botón un poco más abajo */
-    left: 20px;
-    background-color: #e60000;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 10px 18px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    z-index: 9999;
-  }
+    .btn-claro {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      background-color: #e60000;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      z-index: 9999;
+    }
 
-  .btn-claro:hover {
-    background-color: #c00000;
-    transform: scale(1.05);
-  }
+    .btn-claro:hover {
+      background-color: #c00000;
+      transform: scale(1.05);
+    }
+
+    .busqueda-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      margin-top: 50px; /* separa del botón de volver */
+      z-index: 9999;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    #busqueda {
+      width: 200px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
   <a href="/" class="btn-claro">⬅ Volver</a>
+
+  <div class="busqueda-container">
+    <input type="text" id="busqueda" placeholder="Buscar ubicación..." />
+  </div>
+
   <div id="map"></div>
+
   <script>
     const ubicaciones = {{ ubicaciones | tojson | safe }};
     const map = L.map('map').setView([4.5, -75.5], 6);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    ubicaciones.forEach(u => {
-      const popup = `
-        <b>${u.Ubicacion}</b><br>
-        Aliado: ${u.Aliado}<br>
-        Carga: ${u.Carga} W<br>
-        Lat: ${u.Latitud}, Lon: ${u.Longitud}
-      `;
-      L.marker([u.Latitud, u.Longitud]).addTo(map).bindPopup(popup);
+    let marcadores = [];
+
+    function mostrarMarcadores(filtro = "") {
+      marcadores.forEach(m => map.removeLayer(m));
+      marcadores = [];
+
+      ubicaciones
+        .filter(u => u.Ubicacion.toLowerCase().includes(filtro.toLowerCase()))
+        .forEach(u => {
+          const popup = `
+            <b>${u.Ubicacion}</b><br>
+            Aliado: ${u.Aliado}<br>
+            Carga: ${u.Carga} W<br>
+            Lat: ${u.Latitud}, Lon: ${u.Longitud}
+          `;
+          const marker = L.marker([u.Latitud, u.Longitud])
+            .addTo(map)
+            .bindPopup(popup);
+          marcadores.push(marker);
+        });
+    }
+
+    mostrarMarcadores();
+
+    document.getElementById("busqueda").addEventListener("input", function() {
+      const texto = this.value;
+      mostrarMarcadores(texto);
     });
   </script>
 </body>
 </html>
-
