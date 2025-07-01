@@ -105,14 +105,15 @@
 
     ubicaciones.forEach(u => {
       const popup = `
-        <b>${u.Ubicacion}</b><br>
-        Aliado: ${u.Aliado}<br>
-        Carga: ${u.Carga} W<br>
-        Lat: ${u.Latitud}, Lon: ${u.Longitud}<br><br>
-        <form action="/eliminar/${u.id}" method="post" class="popup-form" onsubmit="return confirm('¿Eliminar esta ubicación?');">
-          <button type="submit">🗑️ Eliminar</button>
-        </form>
-      `;
+      <b>${u.Ubicacion}</b><br>
+      Aliado: ${u.Aliado}<br>
+      Carga: ${u.Carga} W<br>
+      Lat: ${u.Latitud}, Lon: ${u.Longitud}<br><br>
+      <form action="/eliminar_por_nombre/${u.Ubicacion}" method="post" class="popup-form" onsubmit="return confirm('¿Eliminar esta ubicación?');">
+        <button type="submit">🗑️ Eliminar</button>
+      </form>
+    `;
+
 
       const marker = L.marker([u.Latitud, u.Longitud])
         .addTo(map)
