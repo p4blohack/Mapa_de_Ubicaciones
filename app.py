@@ -86,10 +86,12 @@ def mapa():
 if __name__ == "__main__":
     app.run(debug=True)  # 'debug=True' permite recargar automáticamente y ver errores en desarrollo
 
-@app.route("/eliminar/<int:id>", methods=["POST"])
-def eliminar(id):
-    ubicacion = Ubicacion.query.get_or_404(id)
-    db.session.delete(ubicacion)
-    db.session.commit()
+@app.route("/eliminar_por_nombre/<nombre>", methods=["POST"])
+def eliminar_por_nombre(nombre):
+    ubicacion = Ubicacion.query.filter_by(ubicacion=nombre).first()
+    if ubicacion:
+        db.session.delete(ubicacion)
+        db.session.commit()
     return redirect("/mapa")
+
 
