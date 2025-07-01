@@ -3,36 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Agregar Ubicación - Claro</title>
+
+  <!-- Icono que aparece en la pestaña del navegador -->
   <link rel="icon" href="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg">
+
+  <!-- 🎨 Estilos CSS dentro del HTML (puedes separarlo en un archivo .css si crece mucho) -->
   <style>
+    /* Estilos generales del cuerpo de la página */
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #ed1c24, #ffffff);
+      font-family: 'Segoe UI', sans-serif; /* Fuente moderna y legible */
+      background: linear-gradient(to bottom right, #ed1c24, #ffffff); /* Fondo degradado */
       margin: 0;
       padding: 40px;
     }
 
+    /* Contenedor central blanco con sombras y padding */
     .container {
       background-color: #fff;
       max-width: 500px;
       margin: auto;
       padding: 30px 40px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Sombra para efecto flotante */
     }
 
+    /* Título principal */
     h2 {
       text-align: center;
-      color: #ed1c24;
+      color: #ed1c24; /* Color corporativo de Claro */
       margin-bottom: 20px;
     }
 
+    /* Etiquetas de los campos del formulario */
     label {
       font-weight: bold;
       display: block;
       margin-top: 15px;
     }
 
+    /* Campos de entrada (texto y números) */
     input[type="text"], input[type="number"] {
       width: 100%;
       padding: 10px;
@@ -41,6 +50,7 @@
       border: 1px solid #ccc;
     }
 
+    /* Botón de enviar */
     button {
       margin-top: 20px;
       width: 100%;
@@ -53,58 +63,81 @@
       cursor: pointer;
     }
 
+    /* Efecto hover al pasar el cursor sobre el botón */
     button:hover {
       background-color: #c1121f;
     }
 
+    /* Contenedor del enlace al mapa */
     .enlace {
       text-align: center;
       margin-top: 20px;
     }
 
+    /* Estilo del enlace al mapa */
     .enlace a {
       color: #ed1c24;
       text-decoration: none;
       font-weight: bold;
     }
 
+    /* Contenedor del logo */
     .logo {
       text-align: center;
       margin-bottom: 20px;
     }
 
+    /* Tamaño del logo */
     .logo img {
       height: 60px;
     }
   </style>
 </head>
 <body>
+
+  <!-- 📦 Contenedor principal -->
   <div class="container">
+
+    <!-- Logo de Claro -->
     <div class="logo">
       <img src="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg" alt="Logo Claro">
     </div>
+
+    <!-- Título -->
     <h2>Agregar nueva ubicación</h2>
+
+    <!-- 📋 Formulario para capturar datos -->
     <form action="/guardar" method="post">
+      <!-- Campo: Ubicación -->
       <label>Ubicación:</label>
       <input type="text" name="Ubicacion" required>
 
+      <!-- Campo: Aliado -->
       <label>Aliado:</label>
       <input type="text" name="Aliado" required>
 
+      <!-- Campo: Carga -->
       <label>Carga:</label>
       <input type="number" name="Carga" required>
 
+      <!-- Campo: Latitud -->
       <label>Latitud:</label>
       <input type="text" name="Latitud" required>
 
+      <!-- Campo: Longitud -->
       <label>Longitud:</label>
       <input type="text" name="Longitud" required>
 
+      <!-- Botón para enviar el formulario -->
       <button type="submit">Guardar ubicación</button>
     </form>
+
+    <!-- Enlace para ir al mapa -->
     <div class="enlace">
       <a href="/mapa">📍 Ir al mapa</a>
     </div>
+
   </div>
 </body>
 </html>
+
