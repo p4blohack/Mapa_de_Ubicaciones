@@ -11,7 +11,7 @@
 
     .btn-claro {
       position: absolute;
-      bottom: 20px; /* 🔽 ahora está en la parte inferior */
+      bottom: 20px;
       left: 20px;
       background-color: #e60000;
       color: white;
@@ -31,42 +31,36 @@
 
     .busqueda-container {
       position: absolute;
-      top: 20px;
+      top: 100px; /* 🔽 MÁS ABAJO */
       left: 20px;
       z-index: 9999;
-      display: flex;
-      align-items: center;
       background: white;
-      padding: 8px 10px;
+      padding: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
     }
 
     .busqueda-container input {
       width: 200px;
-      padding: 8px 8px 8px 32px;
+      padding: 8px 8px 8px 30px;
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
 
-    .busqueda-container .lupa {
+    .busqueda-container .icono-lupa {
       position: absolute;
-      left: 30px;
+      margin-left: 8px;
       font-size: 14px;
       color: #888;
-    }
-
-    .icono-lupa {
-      position: absolute;
-      left: 15px;
-      font-size: 16px;
-      color: gray;
     }
   </style>
 </head>
 <body>
-  <!-- 🔍 Cuadro de búsqueda -->
+
+  <!-- 🔍 Buscador -->
   <div class="busqueda-container">
     <span class="icono-lupa">🔍</span>
     <input type="text" id="busqueda" placeholder="Buscar ubicación..." />
@@ -79,9 +73,17 @@
   <a href="/" class="btn-claro">⬅ Volver</a>
 
   <script>
+    // Si usas Flask, esta línea debe estar activa:
     const ubicaciones = {{ ubicaciones | tojson | safe }};
-    const map = L.map('map').setView([4.5, -75.5], 6);
 
+    // Si solo estás probando sin backend, usa esta línea en su lugar:
+    // const ubicaciones = [
+    //   { Ubicacion: "Bogotá", Aliado: "Claro", Carga: 500, Latitud: 4.65, Longitud: -74.1 },
+    //   { Ubicacion: "Cali", Aliado: "Claro", Carga: 480, Latitud: 3.45, Longitud: -76.5 },
+    //   { Ubicacion: "Medellín", Aliado: "Claro", Carga: 460, Latitud: 6.25, Longitud: -75.56 }
+    // ];
+
+    const map = L.map('map').setView([4.5, -75.5], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -92,28 +94,35 @@
       marcadores.forEach(m => map.removeLayer(m));
       marcadores = [];
 
-      ubicaciones
-        .filter(u => u.Ubicacion.toLowerCase().includes(filtro.toLowerCase()))
-        .forEach(u => {
-          const popup = `
-            <b>${u.Ubicacion}</b><br>
-            Aliado: ${u.Aliado}<br>
-            Carga: ${u.Carga} W<br>
-            Lat: ${u.Latitud}, Lon: ${u.Longitud}
-          `;
-          const marker = L.marker([u.Latitud, u.Longitud])
-            .addTo(map)
-            .bindPopup(popup);
-          marcadores.push(marker);
-        });
+      let encontrados = ubicaciones.filter(u =>
+        u.Ubicacion.toLowerCase().includes(filtro.toLowerCase())
+      );
+
+      encontrados.forEach(u => {
+        const popup = `
+          <b>${u.Ubicacion}</b><br>
+          Aliado: ${u.Aliado}<br>
+          Carga: ${u.Carga} W<br>
+          Lat: ${u.Latitud}, Lon: ${u.Longitud}
+        `;
+        const marker = L.marker([u.Latitud, u.Longitud])
+          .addTo(map)
+          .bindPopup(popup);
+        marcadores.push(marker);
+      });
+
+      if (encontrados.length === 1) {
+        map.setView([encontrados[0].Latitud, encontrados[0].Longitud], 15);
+      }
     }
 
     mostrarMarcadores();
 
-    document.getElementById("busqueda").addEventListener("input", function() {
+    document.getElementById("busqueda").addEventListener("input", function () {
       const texto = this.value;
       mostrarMarcadores(texto);
     });
   </script>
+
 </body>
 </html>
