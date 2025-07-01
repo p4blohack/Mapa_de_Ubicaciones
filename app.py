@@ -85,3 +85,11 @@ def mapa():
 # 🚀 Ejecuta la app si se corre directamente el archivo (no en producción con Gunicorn)
 if __name__ == "__main__":
     app.run(debug=True)  # 'debug=True' permite recargar automáticamente y ver errores en desarrollo
+
+@app.route("/eliminar/<int:id>", methods=["POST"])
+def eliminar(id):
+    ubicacion = Ubicacion.query.get_or_404(id)
+    db.session.delete(ubicacion)
+    db.session.commit()
+    return redirect("/mapa")
+
