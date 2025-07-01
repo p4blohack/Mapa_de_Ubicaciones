@@ -29,41 +29,46 @@
       transform: scale(1.05);
     }
 
-    .busqueda-container {
+    .search-box {
       position: absolute;
-      top: 100px; /* 🔽 MÁS ABAJO */
+      top: 100px;
       left: 20px;
       z-index: 9999;
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
+      width: 250px;
     }
 
-    .busqueda-container input {
-      width: 200px;
-      padding: 8px 8px 8px 30px;
+    .search-box input {
+      width: 100%;
+      padding: 10px 12px;
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
 
-    .busqueda-container .icono-lupa {
-      position: absolute;
-      margin-left: 8px;
-      font-size: 14px;
-      color: #888;
+    .search-results {
+      background: white;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      border-radius: 0 0 6px 6px;
+    }
+
+    .search-result {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .search-result:hover {
+      background-color: #f0f0f0;
     }
   </style>
 </head>
 <body>
 
   <!-- 🔍 Buscador -->
-  <div class="busqueda-container">
-    <span class="icono-lupa">🔍</span>
-    <input type="text" id="busqueda" placeholder="Buscar ubicación..." />
+  <div class="search-box">
+    <input type="text" id="busqueda" placeholder="Buscar ubicación..." autocomplete="off" />
+    <div class="search-results" id="resultados"></div>
   </div>
 
   <!-- 🗺️ Mapa -->
@@ -73,16 +78,7 @@
   <a href="/" class="btn-claro">⬅ Volver</a>
 
   <script>
-    // Si usas Flask, esta línea debe estar activa:
     const ubicaciones = {{ ubicaciones | tojson | safe }};
-
-    // Si solo estás probando sin backend, usa esta línea en su lugar:
-    // const ubicaciones = [
-    //   { Ubicacion: "Bogotá", Aliado: "Claro", Carga: 500, Latitud: 4.65, Longitud: -74.1 },
-    //   { Ubicacion: "Cali", Aliado: "Claro", Carga: 480, Latitud: 3.45, Longitud: -76.5 },
-    //   { Ubicacion: "Medellín", Aliado: "Claro", Carga: 460, Latitud: 6.25, Longitud: -75.56 }
-    // ];
-
     const map = L.map('map').setView([4.5, -75.5], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -90,37 +86,51 @@
 
     let marcadores = [];
 
-    function mostrarMarcadores(filtro = "") {
-      marcadores.forEach(m => map.removeLayer(m));
-      marcadores = [];
+    // Crear y guardar los marcadores con popup
+    ubicaciones.forEach(u => {
+      const popup = `
+        <b>${u.Ubicacion}</b><br>
+        Aliado: ${u.Aliado}<br>
+        Carga: ${u.Carga} W<br>
+        Lat: ${u.Latitud}, Lon: ${u.Longitud}
+      `;
+      const marker = L.marker([u.Latitud, u.Longitud])
+        .addTo(map)
+        .bindPopup(popup);
+      marcadores.push({ ...u, marker });
+    });
 
-      let encontrados = ubicaciones.filter(u =>
-        u.Ubicacion.toLowerCase().includes(filtro.toLowerCase())
+    const input = document.getElementById("busqueda");
+    const resultados = document.getElementById("resultados");
+
+    input.addEventListener("input", function () {
+      const texto = this.value.toLowerCase();
+      resultados.innerHTML = "";
+      if (texto === "") return;
+
+      const filtrados = marcadores.filter(u =>
+        u.Ubicacion.toLowerCase().includes(texto)
       );
 
-      encontrados.forEach(u => {
-        const popup = `
-          <b>${u.Ubicacion}</b><br>
-          Aliado: ${u.Aliado}<br>
-          Carga: ${u.Carga} W<br>
-          Lat: ${u.Latitud}, Lon: ${u.Longitud}
-        `;
-        const marker = L.marker([u.Latitud, u.Longitud])
-          .addTo(map)
-          .bindPopup(popup);
-        marcadores.push(marker);
+      filtrados.forEach(u => {
+        const div = document.createElement("div");
+        div.className = "search-result";
+        div.textContent = u.Ubicacion;
+        div.addEventListener("click", () => {
+          map.setView([u.Latitud, u.Longitud], 16);
+          u.marker.openPopup();
+          resultados.innerHTML = "";
+          input.value = u.Ubicacion;
+        });
+        resultados.appendChild(div);
       });
+    });
 
-      if (encontrados.length === 1) {
-        map.setView([encontrados[0].Latitud, encontrados[0].Longitud], 15);
+    // Ocultar resultados si haces clic fuera
+    document.addEventListener("click", function (e) {
+      if (!document.querySelector(".search-box").contains(e.target)) {
+        resultados.innerHTML = "";
       }
-    }
-
-    mostrarMarcadores();
-
-    document.getElementById("busqueda").addEventListener("input", function () {
-      const texto = this.value;
-      mostrarMarcadores(texto);
     });
   </script>
 
