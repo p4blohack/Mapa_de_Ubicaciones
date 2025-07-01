@@ -4,23 +4,13 @@
   <meta charset="utf-8" />
   <title>Mapa</title>
 
-  <!-- 🧭 Hoja de estilos de Leaflet (para mostrar mapas) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- 🌐 Ícono de la pestaña (favicon) -->
   <link rel="icon" href="https://www.comunidad-ola.com/portal/images/Logosempresas/claro_logo_2.jpg">
-
-  <!-- 📌 Librería Leaflet para manejar mapas interactivos -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- 🎨 Estilos internos para el diseño del mapa, botón y buscador -->
   <style>
-    /* Contenedor del mapa ocupa toda la pantalla */
-    #map {
-      height: 100vh;
-    }
+    #map { height: 100vh; }
 
-    /* Estilo del botón "Volver" */
     .btn-claro {
       position: absolute;
       bottom: 20px;
@@ -33,7 +23,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       transition: background-color 0.3s ease, transform 0.2s ease;
-      z-index: 9999; /* Se muestra por encima del mapa */
+      z-index: 9999;
     }
 
     .btn-claro:hover {
@@ -41,7 +31,6 @@
       transform: scale(1.05);
     }
 
-    /* Caja del buscador */
     .search-box {
       position: absolute;
       top: 100px;
@@ -58,7 +47,6 @@
       border-radius: 6px;
     }
 
-    /* Contenedor de resultados */
     .search-results {
       background: white;
       border: 1px solid #ccc;
@@ -75,80 +63,85 @@
     .search-result:hover {
       background-color: #f0f0f0;
     }
+
+    .popup-form {
+      margin-top: 8px;
+    }
+
+    .popup-form button {
+      background-color: #e60000;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .popup-form button:hover {
+      background-color: #c00000;
+    }
   </style>
 </head>
 <body>
 
-  <!-- 🔍 Caja de búsqueda de ubicaciones -->
   <div class="search-box">
     <input type="text" id="busqueda" placeholder="Buscar ubicación..." autocomplete="off" />
     <div class="search-results" id="resultados"></div>
   </div>
 
-  <!-- 🗺️ Contenedor del mapa -->
   <div id="map"></div>
 
-  <!-- ⬅ Botón para regresar al formulario -->
   <a href="/" class="btn-claro">⬅ Volver</a>
 
-  <!-- 🧠 Script principal que carga el mapa y los datos -->
   <script>
-    // 🔗 Datos que vienen desde Flask (lista de ubicaciones en formato JSON)
     const ubicaciones = {{ ubicaciones | tojson | safe }};
-
-    // 🗺️ Inicializa el mapa centrado en Colombia (coordenadas aproximadas)
     const map = L.map('map').setView([4.5, -75.5], 6);
 
-    // 🌍 Añade la capa de mapa base (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     let marcadores = [];
 
-    // 📌 Recorre cada ubicación y la muestra como marcador en el mapa
     ubicaciones.forEach(u => {
       const popup = `
         <b>${u.Ubicacion}</b><br>
         Aliado: ${u.Aliado}<br>
         Carga: ${u.Carga} W<br>
-        Lat: ${u.Latitud}, Lon: ${u.Longitud}
+        Lat: ${u.Latitud}, Lon: ${u.Longitud}<br><br>
+        <form action="/eliminar/${u.id}" method="post" class="popup-form" onsubmit="return confirm('¿Eliminar esta ubicación?');">
+          <button type="submit">🗑️ Eliminar</button>
+        </form>
       `;
 
       const marker = L.marker([u.Latitud, u.Longitud])
         .addTo(map)
-        .bindPopup(popup); // Muestra info al hacer clic
+        .bindPopup(popup);
 
-      // Guarda cada marcador junto a su información
       marcadores.push({ ...u, marker });
     });
 
-    // 🔍 Elementos del buscador
     const input = document.getElementById("busqueda");
     const resultados = document.getElementById("resultados");
 
-    // 📥 Escucha cambios en el input de búsqueda
     input.addEventListener("input", function () {
       const texto = this.value.toLowerCase();
-      resultados.innerHTML = ""; // Limpia resultados anteriores
-
+      resultados.innerHTML = "";
       if (texto === "") return;
 
-      // 🔎 Filtra marcadores que coincidan con el texto
       const filtrados = marcadores.filter(u =>
         u.Ubicacion.toLowerCase().includes(texto)
       );
 
-      // 🖱️ Crea los resultados clicables
       filtrados.forEach(u => {
         const div = document.createElement("div");
         div.className = "search-result";
         div.textContent = u.Ubicacion;
 
         div.addEventListener("click", () => {
-          map.setView([u.Latitud, u.Longitud], 16); // Zoom al marcador
-          u.marker.openPopup(); // Abre la info
-          resultados.innerHTML = ""; // Limpia búsqueda
+          map.setView([u.Latitud, u.Longitud], 16);
+          u.marker.openPopup();
+          resultados.innerHTML = "";
           input.value = u.Ubicacion;
         });
 
@@ -156,7 +149,6 @@
       });
     });
 
-    // 🧽 Oculta los resultados si se hace clic fuera del buscador
     document.addEventListener("click", function (e) {
       if (!document.querySelector(".search-box").contains(e.target)) {
         resultados.innerHTML = "";
